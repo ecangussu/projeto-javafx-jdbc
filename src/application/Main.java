@@ -10,6 +10,9 @@ import javafx.stage.Stage;
 
 
 public class Main extends Application {
+	
+	private static Scene mainScene;
+	
 	@Override
 	public void start(Stage primaryStage) {
 		try {
@@ -25,7 +28,7 @@ public class Main extends Application {
 			scrollPane.setFitToWidth(true);
 			
 			//Instanciação da cena passando como parametro o objeto principal da view (ScrollPane da view) 
-			Scene mainScene = new Scene(scrollPane);
+			mainScene = new Scene(scrollPane);
 			
 			//Palco da cena tendo como cena principal o mainScene
 			primaryStage.setScene(mainScene);
@@ -38,6 +41,10 @@ public class Main extends Application {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static Scene getMainScene() {
+		return mainScene;
 	}
 	
 	public static void main(String[] args) {
