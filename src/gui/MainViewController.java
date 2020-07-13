@@ -3,6 +3,7 @@ package gui;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 import application.Main;
 import gui.util.Alertas;
@@ -30,19 +31,23 @@ public class MainViewController implements Initializable {
 	@FXML
 	private MenuItem menuItemSobre;
 	
-	
 	//Criação dos métodos para tratar os eventos do menu
 	public void onMenuItemVendedorAction() {
 		System.out.println("onMenuItemVendedorAction");
 	}
 	
 	public void onMenuItemDepartamentoAction() {
-		//loadView("/gui/DepartamentoList.fxml");
-		loadView2("/gui/DepartamentoList.fxml");
+		//2º parametros - acessar o controller
+		//Referencia para o controller dessa view
+		loadView("/gui/DepartamentoList.fxml", (DepartamentoListController controller) -> {
+			//Injetar a dependencia do service no controller
+			controller.setDepartamentoService(new DepartamentoService());
+			controller.updateTableView();
+		});
 	}
 	
 	public void onMenuItemSobreAction() {
-		loadView("/gui/Sobre.fxml");
+		loadView("/gui/Sobre.fxml", x -> {});
 	}
 	
 	@Override
@@ -50,7 +55,7 @@ public class MainViewController implements Initializable {
 	}
 	
 	//synchronized faz com que o processamento nao seja interrompido durante o multitrading
-	private synchronized void loadView(String absoluteName) {
+	private synchronized <T> void loadView(String absoluteName, Consumer<T> initializingAction) {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
 			VBox newVBox = loader.load();
@@ -69,47 +74,16 @@ public class MainViewController implements Initializable {
 			//Adicionando os filhos do vbox da tela principal
 			mainVBox.getChildren().add(mainMenu);
 			//Acrescentando os filhos do vbox da tela sobre
-			mainVBox.getChildren().addAll(newVBox.getChildren());			
+			mainVBox.getChildren().addAll(newVBox.getChildren());
+			
+			//Comando para ativar o método passado como parametro (initializingAction)
+			T controller = loader.getController();
+			//Comando para executar o metodo passado como parametro
+			initializingAction.accept(controller);
 		}
 		catch (IOException e) {
 			Alertas.showAlert("IO Exception", "Erro no carregamento da página", e.getMessage(), AlertType.ERROR);
 		}
 	}
-	
-	//synchronized faz com que o processamento nao seja interrompido durante o multitrading
-		private synchronized void loadView2(String absoluteName) {
-			try {
-				//Selecionando a view
-				FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
-				//Carregar a view
-				VBox newVBox = loader.load();
-				
-				//Referencia a cena da tela principal
-				Scene mainScene = Main.getMainScene();
-				//Referencia ao vbox da tela principal
-				//getRoot() pega o primeiro elemento da view (scrollpane)
-				VBox mainVBox = (VBox) ((ScrollPane) mainScene.getRoot()).getContent();
-				
-				//Acrescentar nos filhos do vbox da tela principal os filhos do vbox da janela sobre
-				//"Salvando" os filhos do vbox da tela principal numa variavel
-				Node mainMenu = mainVBox.getChildren().get(0);
-				//Limpando o vbox da tela principal
-				mainVBox.getChildren().clear();
-				//Adicionando os filhos do vbox da tela principal
-				mainVBox.getChildren().add(mainMenu);
-				//Acrescentando os filhos do vbox da tela sobre
-				mainVBox.getChildren().addAll(newVBox.getChildren());
-				
-				//Acessando o controller 
-				//Referencia para o controller dessa view 
-				DepartamentoListController controller = loader.getController();
-				//Injetar a dependencia do service no controller
-				controller.setDepartamentoService(new DepartamentoService());
-				controller.updateTableView();
-			}
-			catch (IOException e) {
-				Alertas.showAlert("IO Exception", "Erro no carregamento da página", e.getMessage(), AlertType.ERROR);
-			}
-		}
 
 }
