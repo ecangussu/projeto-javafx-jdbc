@@ -5,7 +5,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import application.Main;
-import gui.util.Alerts;
+import gui.util.Alertas;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -36,7 +36,7 @@ public class MainViewController implements Initializable {
 	}
 	
 	public void onMenuItemDepartamentoAction() {
-		System.out.println("onMenuItemDepartamentoAction");
+		loadView("/gui/DepartamentoList.fxml");
 	}
 	
 	public void onMenuItemSobreAction() {
@@ -66,11 +66,11 @@ public class MainViewController implements Initializable {
 			mainVBox.getChildren().clear();
 			//Adicionando os filhos do vbox da tela principal
 			mainVBox.getChildren().add(mainMenu);
-			//Acrescentando os filhoos do vbox da tela sobre
+			//Acrescentando os filhos do vbox da tela sobre
 			mainVBox.getChildren().addAll(newVBox.getChildren());			
 		}
 		catch (IOException e) {
-			Alerts.showAlert("IO Exception", "Erro no carregamento da página", e.getMessage(), AlertType.ERROR);
+			Alertas.showAlert("IO Exception", "Erro no carregamento da página", e.getMessage(), AlertType.ERROR);
 		}
 	}
 
