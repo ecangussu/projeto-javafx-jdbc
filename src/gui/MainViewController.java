@@ -6,7 +6,7 @@ import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
 import application.Main;
-import gui.util.Alertas;
+import gui.util.Alerts;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -16,38 +16,38 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
-import model.services.DepartamentoService;
+import model.services.DepartmentService;
 
 public class MainViewController implements Initializable {
 	//Classe que controla as ações da tela
 	
 	//Criação dos atributos dos itens de menu (MenuItem)
 	@FXML
-	private MenuItem menuItemVendedor;
+	private MenuItem menuItemSeller;
 	
 	@FXML
-	private MenuItem menuItemDepartamento;
+	private MenuItem menuItemDepartment;
 	
 	@FXML
-	private MenuItem menuItemSobre;
+	private MenuItem menuItemAbout;
 	
 	//Criação dos métodos para tratar os eventos do menu
-	public void onMenuItemVendedorAction() {
-		System.out.println("onMenuItemVendedorAction");
+	public void onMenuItemSellerAction() {
+		System.out.println("onMenuItemSellerAction");
 	}
 	
-	public void onMenuItemDepartamentoAction() {
+	public void onMenuItemDepartmentAction() {
 		//2º parametros - acessar o controller
 		//Referencia para o controller dessa view
-		loadView("/gui/DepartamentoList.fxml", (DepartamentoListController controller) -> {
+		loadView("/gui/DepartmentList.fxml", (DepartmentListController controller) -> {
 			//Injetar a dependencia do service no controller
-			controller.setDepartamentoService(new DepartamentoService());
+			controller.setDepartmentService(new DepartmentService());
 			controller.updateTableView();
 		});
 	}
 	
-	public void onMenuItemSobreAction() {
-		loadView("/gui/Sobre.fxml", x -> {});
+	public void onMenuItemAboutAction() {
+		loadView("/gui/About.fxml", x -> {});
 	}
 	
 	@Override
@@ -82,7 +82,7 @@ public class MainViewController implements Initializable {
 			initializingAction.accept(controller);
 		}
 		catch (IOException e) {
-			Alertas.showAlert("IO Exception", "Erro no carregamento da página", e.getMessage(), AlertType.ERROR);
+			Alerts.showAlert("IO Exception", "Erro no carregamento da página", e.getMessage(), AlertType.ERROR);
 		}
 	}
 

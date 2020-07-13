@@ -14,35 +14,35 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import model.entities.Departamento;
-import model.services.DepartamentoService;
+import model.entities.Department;
+import model.services.DepartmentService;
 
-public class DepartamentoListController implements Initializable {
+public class DepartmentListController implements Initializable {
 
-	private DepartamentoService service;
+	private DepartmentService service;
 	
 	@FXML
-	private TableView<Departamento> tableViewDepartamento;
+	private TableView<Department> tableViewDepartment;
 	
 	@FXML
 	//Tipo da entidade e tipo da coluna
-	private TableColumn<Departamento, Integer> tableColumId;
+	private TableColumn<Department, Integer> tableColumId;
 	
 	@FXML
-	private TableColumn<Departamento, String> tableColumNome;
+	private TableColumn<Department, String> tableColumName;
 	
 	@FXML
-	private Button btNovo;
+	private Button btNew;
 	
 	//Os departamentos serao carregados na obsList
-	private ObservableList<Departamento> obsList;
+	private ObservableList<Department> obsList;
 	
 	@FXML
 	public void onBtNewAction() {
 		System.out.println("Apertou o botão btNovo");
 	}
 	
-	public void setDepartamentoService(DepartamentoService service) {
+	public void setDepartmentService(DepartmentService service) {
 		this.service = service;
 	}
 	
@@ -54,11 +54,11 @@ public class DepartamentoListController implements Initializable {
 	//Padrão JavaFX para iniciar o comportamento das colunas
 	private void initializeNodes() {
 		tableColumId.setCellValueFactory(new PropertyValueFactory<>("id"));
-		tableColumNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
+		tableColumName.setCellValueFactory(new PropertyValueFactory<>("name"));
 		
 		//Completar a janela com o TableView (tableview acompanha a altura da janela)
 		Stage stage = (Stage) Main.getMainScene().getWindow();
-		tableViewDepartamento.prefHeightProperty().bind(stage.heightProperty());
+		tableViewDepartment.prefHeightProperty().bind(stage.heightProperty());
 	}
 	
 	//Método responsável por acessar o serviço (service) carregar os dados (departamentos) e joga-los na variavel no obsList	
@@ -66,9 +66,9 @@ public class DepartamentoListController implements Initializable {
 		if(service == null) {
 			throw new IllegalStateException("Serviço está nulo");
 		}
-		List<Departamento> list = service.findAll();
+		List<Department> list = service.findAll();
 		obsList = FXCollections.observableArrayList(list);
-		tableViewDepartamento.setItems(obsList);
+		tableViewDepartment.setItems(obsList);
 	}
 
 }
