@@ -52,7 +52,7 @@ public class DepartmentListController implements Initializable {
 	public void onBtNewAction(ActionEvent event) {
 		Stage parentStage = Utils.currentStage(event);
 		Department obj = new Department();
-		CreateDialogForm(obj, "/gui/DepartmentForm.fxml", parentStage);
+		createDialogForm(obj, "/gui/DepartmentForm.fxml", parentStage);
 	}
 	
 	public void setDepartmentService(DepartmentService service) {
@@ -88,7 +88,7 @@ public class DepartmentListController implements Initializable {
 	//obj = objeto do departamento
 	//absoluteName = tela que será carregada
 	//parentState = stage (palco) da janela atual
-	private void CreateDialogForm(Department obj, String absoluteName, Stage parentStage) {
+	private void createDialogForm(Department obj, String absoluteName, Stage parentStage) {
 		//Instanciação da janela de diálogo
 		//Carregar a janela
 		try {
@@ -100,6 +100,8 @@ public class DepartmentListController implements Initializable {
 			DepartmentFormController controller = loader.getController();
 			//Injetando no controlador o departamento
 			controller.setDepartament(obj);
+			//Injeção de dependencia do DepartmentService no controlador
+			controller.setDepartmentService(new DepartmentService());
 			//Carregar os dados do obj no formulario
 			controller.updateFormData();
 			
