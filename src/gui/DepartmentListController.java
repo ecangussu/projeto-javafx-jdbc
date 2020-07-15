@@ -51,7 +51,8 @@ public class DepartmentListController implements Initializable {
 	//A partir do event será possível acessar o stage
 	public void onBtNewAction(ActionEvent event) {
 		Stage parentStage = Utils.currentStage(event);
-		CreateDialogForm("/gui/DepartmentForm.fxml", parentStage);
+		Department obj = new Department();
+		CreateDialogForm(obj, "/gui/DepartmentForm.fxml", parentStage);
 	}
 	
 	public void setDepartmentService(DepartmentService service) {
@@ -84,12 +85,23 @@ public class DepartmentListController implements Initializable {
 	}
 	
 	//Quando é criada uma janela de diálogo é necessário informar quem é o stage que criou esta janela
-	private void CreateDialogForm(String absoluteName, Stage parentStage) {
+	//obj = objeto do departamento
+	//absoluteName = tela que será carregada
+	//parentState = stage (palco) da janela atual
+	private void CreateDialogForm(Department obj, String absoluteName, Stage parentStage) {
 		//Instanciação da janela de diálogo
 		//Carregar a janela
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
 			Pane pane = loader.load();
+			
+			//Referência para o controlador
+			//Pega o controller da tela carregada acima (formulario)
+			DepartmentFormController controller = loader.getController();
+			//Injetando no controlador o departamento
+			controller.setDepartament(obj);
+			//Carregar os dados do obj no formulario
+			controller.updateFormData();
 			
 			//Quando se quer carregar uma janela na frente de outra já carregada é necessário instanciar outro stage (palco) -> um palco na frente do outro
 			Stage dialogStage = new Stage();
