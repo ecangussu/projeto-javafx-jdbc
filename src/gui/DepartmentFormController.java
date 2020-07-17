@@ -3,7 +3,9 @@ package gui;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import db.DbException;
 import gui.listeners.DataChangeListener;
@@ -18,6 +20,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import model.entities.Department;
+import model.exceptions.ValidationException;
 import model.services.DepartmentService;
 
 public class DepartmentFormController implements Initializable {
@@ -62,6 +65,9 @@ public class DepartmentFormController implements Initializable {
 			//Pegando uma referencia da janela atual 
 			Utils.currentStage(event).close();
 		}
+		catch(ValidationException e) {
+			setErrorMessages(e.getErrors());
+		}
 		catch(DbException e) {
 			Alerts.showAlert("Erro ao salvar o objeto", null, e.getMessage(), AlertType.ERROR);
 		}
@@ -76,8 +82,21 @@ public class DepartmentFormController implements Initializable {
 	//Pegar os dados digitados nas caixas de textos da tela e instanciar um departamento com eles
 	private Department getFormData() {
 		Department obj = new Department();
+		
+		ValidationException exception = new ValidationException("Erro de validação!");
+		
 		obj.setId(Utils.tryParseToInt(txtId.getText()));
+		
+		if(txtName.getText() == null || txtName.getText().trim().equals("")) {
+			exception.addError("name", "O campo não pode ser vazio!");
+		}
 		obj.setName(txtName.getText());
+		
+		//Se na coleção de erros existe pelo menos 1 erro a exceção será lançada 
+		if(exception.getErrors().size() > 0) {
+			throw exception;
+		}
+		
 		return obj;
 	}
 	
@@ -118,6 +137,17 @@ public class DepartmentFormController implements Initializable {
 		//Converte o valor do id (inteiro) para String -> caixas de texto recebem string
 		txtId.setText(String.valueOf(entity.getId()));
 		txtName.setText(entity.getName());
+	}
+	
+	//Responsável por pegar os erros da exceção e joga-los na tela
+	private void setErrorMessages(Map<String, String> errors) {
+		//Set = conjunto (outra coleção)
+		Set<String> fields = errors.keySet();
+		
+		//Se no conjunto fields existe a chave name
+		if(fields.contains("name")) {
+			labelErrorName.setText(errors.get("name"));
+		}
 	}
 
 }
