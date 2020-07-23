@@ -1,8 +1,11 @@
 package gui;
 
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -17,6 +20,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import model.entities.Seller;
@@ -25,11 +29,8 @@ import model.services.SellerService;
 
 public class SellerFormController implements Initializable {
 
-	//Dependencia para o department
-	//entity -> entidade relacionada a este formulário
 	private Seller entity;
 	
-	//Dependencia para o SellerService
 	private SellerService service;
 	
 	private List<DataChangeListener> dataChangeListeners = new ArrayList<>();
@@ -41,7 +42,25 @@ public class SellerFormController implements Initializable {
 	private TextField txtName;
 	
 	@FXML
+	private TextField txtEmail;
+	
+	@FXML
+	private DatePicker dtBirthDate;
+	
+	@FXML
+	private TextField txtBaseSalary;
+	
+	@FXML
 	private Label labelErrorName;
+	
+	@FXML
+	private Label labelErrorEmail;
+	
+	@FXML
+	private Label labelErrorBirthDate;
+	
+	@FXML
+	private Label labelErrorBaseSalary;
 	
 	@FXML
 	private Button btSave;
@@ -60,9 +79,7 @@ public class SellerFormController implements Initializable {
 		try {
 			entity = getFormData();
 			service.saveOrUpdate(entity);
-			//Quando o saveOrUpdate finalizar com sucesso será necessário notificar aos listeners
-			notifyDataChangeListeners();
-			//Pegando uma referencia da janela atual 
+			notifyDataChangeListeners(); 
 			Utils.currentStage(event).close();
 		}
 		catch(ValidationException e) {
@@ -79,7 +96,6 @@ public class SellerFormController implements Initializable {
 		}
 	}
 
-	//Pegar os dados digitados nas caixas de textos da tela e instanciar um departamento com eles
 	private Seller getFormData() {
 		Seller obj = new Seller();
 		
@@ -92,7 +108,6 @@ public class SellerFormController implements Initializable {
 		}
 		obj.setName(txtName.getText());
 		
-		//Se na coleção de erros existe pelo menos 1 erro a exceção será lançada 
 		if(exception.getErrors().size() > 0) {
 			throw exception;
 		}
@@ -100,7 +115,6 @@ public class SellerFormController implements Initializable {
 		return obj;
 	}
 	
-	//Controlador passa a ter uma instancia do departamento
 	public void setDepartament(Seller entity) {
 		this.entity = entity;
 	}
@@ -109,7 +123,6 @@ public class SellerFormController implements Initializable {
 		this.service = service;
 	}
 	
-	//Outros objetos que implementam o DataChangeListener poderao se inscrever para receber o evento da classe 
 	public void subscribeDataChangeListener(DataChangeListener listener) {
 		dataChangeListeners.add(listener);
 	}
@@ -126,25 +139,33 @@ public class SellerFormController implements Initializable {
 	
 	private void initializeNodes() {
 		Constraints.setTextFieldInteger(txtId);
-		Constraints.setTextFieldMaxLength(txtName, 30);
+		Constraints.setTextFieldMaxLength(txtName, 70);
+		Constraints.setTextFieldDouble(txtBaseSalary);
+		Constraints.setTextFieldMaxLength(txtEmail, 60);
+		//Formato pra data
+		Utils.formatDatePicker(dtBirthDate, "dd/MM/yyyy");
 	}
 	
-	//Pegar os dados do departamento e popular as caixas de texto do formulário
 	public void updateFormData() {
 		if(entity == null) {
 			throw new IllegalStateException("Entidade vazia!");
 		}
-		//Converte o valor do id (inteiro) para String -> caixas de texto recebem string
 		txtId.setText(String.valueOf(entity.getId()));
 		txtName.setText(entity.getName());
+		txtEmail.setText(entity.getEmail());
+		Locale.setDefault(Locale.US);
+		txtBaseSalary.setText(String.format("%.2f", entity.getBaseSalary()));
+		//DatePicker trabalha com LocalDate e o entity.getBirthDate é um Date -> usa o LocalDate.ofInstant para conversão
+		//ofInstant -> pega um instante -> tem de converter a data para instante -> usa o toInstant
+		//zone -> fuso horário -> fuso horário do usuário -> ZoneId.systemDefault()
+		if(entity.getBirthDate() != null) {
+			dtBirthDate.setValue(LocalDate.ofInstant(entity.getBirthDate().toInstant(), ZoneId.systemDefault()));			
+		}
 	}
 	
-	//Responsável por pegar os erros da exceção e joga-los na tela
 	private void setErrorMessages(Map<String, String> errors) {
-		//Set = conjunto (outra coleção)
 		Set<String> fields = errors.keySet();
 		
-		//Se no conjunto fields existe a chave name
 		if(fields.contains("name")) {
 			labelErrorName.setText(errors.get("name"));
 		}
