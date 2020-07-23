@@ -79,6 +79,7 @@ public class DepartmentListController implements Initializable, DataChangeListen
 	
 	//Padrão JavaFX para iniciar o comportamento das colunas
 	private void initializeNodes() {
+		//id, name = nome do atributo da classe
 		tableColumId.setCellValueFactory(new PropertyValueFactory<>("id"));
 		tableColumName.setCellValueFactory(new PropertyValueFactory<>("name"));
 		
